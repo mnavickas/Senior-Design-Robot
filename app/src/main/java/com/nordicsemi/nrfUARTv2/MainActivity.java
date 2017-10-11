@@ -35,6 +35,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
@@ -43,12 +45,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.nordicsemi.nrfUARTv2.R.id.textLeft;
 import static com.nordicsemi.nrfUARTv2.UartService.ACTION_GATT_CONNECTED;
 import static com.nordicsemi.nrfUARTv2.UartService.ACTION_GATT_DISCONNECTED;
 
@@ -69,6 +73,7 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
 
     private SeekBar leftBar, rightBar;
     private Timer mTimer;
+    private TextView left, right;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,10 +87,51 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
             finish();
             return;
         }
+        left = (TextView)findViewById(textLeft);
+        left.setRotation(90);
+        right = (TextView)findViewById(R.id.textRight);
+        right.setRotation(90);
 
         service_init();
         leftBar = (SeekBar)findViewById(R.id.leftBar);
+
+        leftBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                left.setText(String.valueOf(i-250));
+                seekBar.setProgressDrawable(new ColorDrawable(Color.rgb( i/2,0 , 0)));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         rightBar = (SeekBar)findViewById(R.id.rightBar);
+        rightBar.setProgressDrawable(new ColorDrawable(Color.rgb( 0,0 , 255)));
+        rightBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+               right.setText(String.valueOf(i-250));
+                seekBar.setProgressDrawable(new ColorDrawable(Color.rgb( i/2,0 , 0)));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         leftBar.setProgress(250);
         rightBar.setProgress(250);
         // Handle Disconnect & Connect button
@@ -174,7 +220,7 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
 
             }
         },DELAY+INTERVAL/2,INTERVAL);
-        
+
     }
     
     //UART service connected/disconnected
